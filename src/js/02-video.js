@@ -1,6 +1,6 @@
 import Player from '@vimeo/player';
 console.log(Player);
-var throttle = require(' lodash.throttle');
+var throttle = require('lodash.throttle');
 const iframe = document.querySelector('iframe');
 const player = new Vimeo.Player(iframe);
 function foo() {
