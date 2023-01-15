@@ -1,44 +1,40 @@
 import throttle from 'lodash.throttle';
-const KEY_LOCAL = 'feedback-form-state';
+
 const form = document.querySelector('.feedback-form');
 const rest = {
-  textarea: document.querySelector('textarea'),
-  input: document.querySelector('input'),
+  messageText: document.querySelector('textarea'),
+  emailInput: document.querySelector('input'),
 };
-
-const formData = {
-  email: '',
-  message: '',
-};
-
-form.addEventListener('input', throttle(onTextInput, 500));
+const KEY_LOCAL = 'feedback-form-state';
 populateTextarea();
+form.addEventListener('input', throttle(onTextInput, 500));
+
 form.addEventListener('submit', onFormSubmit);
+
 function onTextInput(e) {
-  formData[e.target.name] = e.target.value;
+  const formData = {
+    email: this.email.value,
+    message: this.message.value,
+  };
+
   localStorage.setItem(KEY_LOCAL, JSON.stringify(formData));
 }
 
+function populateTextarea() {
+  try {
+    const savedMessege = JSON.parse(localStorage.getItem(KEY_LOCAL));
+
+    if (savedMessege) {
+      rest.emailInput.value = savedMessege.email;
+      rest.messageText.value = savedMessege.message;
+    }
+  } catch (error) {
+    console.error('Get state error', error.message);
+  }
+}
 function onFormSubmit(evt) {
   evt.preventDefault();
-  const {
-    elements: { email, message },
-  } = evt.currentTarget;
-  if (!email.value || !message.value) {
-    alert('Всі поля повинні бути заповнені!');
-  }
-  evt.currentTarget.reset();
+  console.log({ email: this.email.value, message: this.message.value });
   localStorage.removeItem(KEY_LOCAL);
-  console.log(formData);
-}
-function populateTextarea() {
-  const savedMessege = JSON.parse(localStorage.getItem(KEY_LOCAL));
-
-  if (savedMessege) {
-    const dsds = JSON.stringify(savedMessege.email);
-    const mas = JSON.stringify(savedMessege.message);
-
-    rest.textarea.value = JSON.parse(mas);
-    rest.input.value = JSON.parse(dsds);
-  }
+  form.reset();
 }
